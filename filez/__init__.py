@@ -39,6 +39,40 @@ def first_existing(*filenames, expanduser=True):
 			return f
 	raise FileNotFoundError('none of these files found:\n'+ '\n'.join(filenames) )
 
+def all_existing(*filenames, expanduser=True, raise_if_none=True):
+	"""
+	Finds all existing files among listed file names.
+
+	Parameters
+	----------
+	filenames : tuple of Path-like
+	expanduser : bool, default True
+		Should each filename be passed through the `os.path.expanduser` function?
+	raise_if_none : bool, default True
+		If none of `filenames` exists, raise an exception instead of returning an
+		empty list
+
+	Returns
+	-------
+	f : Path-like
+		The first existing file in the list.
+
+	Raises
+	------
+	FileNotFoundError
+		If none of the listed file names exists
+
+	"""
+	result = []
+	for f in filenames:
+		if expanduser:
+			f = os.path.expanduser(f)
+		if os.path.exists(f):
+			result.append(f)
+	if raise_if_none and len(result)==0:
+		raise FileNotFoundError('none of these files found:\n'+ '\n'.join(filenames) )
+	return result
+
 
 def _insensitive_glob(pattern):
 	def either(c):
