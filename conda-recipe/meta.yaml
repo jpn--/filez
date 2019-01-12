@@ -12,9 +12,6 @@ requirements:
     - python>=3.6
   run:
     - python>=3.6
-
-build:
-  noarch: python
   
 test:
   # Python imports
