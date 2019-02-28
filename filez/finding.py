@@ -75,7 +75,7 @@ def _insensitive_glob(pattern):
 	return ''.join(map(either, pattern))
 
 
-def latest_matching(pattern, echo=False, case_insensitive=False):
+def latest_matching(pattern, echo=False, case_insensitive=False, expanduser=True):
 	"""Get the most recently modified file matching the glob pattern
 
 	Parameters
@@ -86,6 +86,8 @@ def latest_matching(pattern, echo=False, case_insensitive=False):
 		If true, print the last modified time for each matching file
 	case_insensitive : bool, default False
 		Tf true, the glob pattern will be modified to be case insensitive.
+	expanduser : bool, default true
+		Should each pattern be passed through the `os.path.expanduser` function?
 
 	Returns
 	-------
@@ -93,6 +95,8 @@ def latest_matching(pattern, echo=False, case_insensitive=False):
 		The filename of the most recently modified file matching the glob pattern
 
 	"""
+	if expanduser:
+		pattern = os.path.expanduser(pattern)
 	if case_insensitive:
 		pattern = _insensitive_glob(pattern)
 	files = glob.glob(pattern)
