@@ -3,6 +3,7 @@ from .opening import open_file_writer
 
 import os
 import gzip
+import hashlib
 try:
 	import cloudpickle as pickle
 except ImportError:
@@ -90,6 +91,9 @@ def cache(filename, function, *args, **kwargs):
 	"""
 	Cache a function's return value to a file.
 
+	This is not a smart cache: if the named cache file exists, it is loaded
+	and the given arguments are ignored.
+
 	Parameters
 	----------
 	filename : Path-like
@@ -111,3 +115,49 @@ def cache(filename, function, *args, **kwargs):
 		obj = function(*args, **kwargs)
 		save(obj, filename, overwrite=False)
 		return obj
+
+def auto_cache(cache_dir, function, *args, **kwargs):
+	"""
+	Cache a function's return value to a file.
+
+	This is slightly smarter cache: if the named cache file exists, it is loaded
+	and the given arguments are ignored.
+
+	Parameters
+	----------
+	cache_dir : Path-like
+		This is either a text or byte string giving the name (and the path
+		if the file isn't in the current working directory) of the directory to
+		be used to store cache files.
+	function : Callable
+		A function
+	*args, **kwargs : Any
+		Arguments to the function if the result is not cached.
+
+	Returns
+	-------
+	object
+	"""
+	h = hashlib.sha224(pickle.dumps((args, kwargs))).hexdigest()
+	cachefile = os.path.join(cache_dir, f"{h}.gzpk")
+	return cache(cachefile, function, *args, **kwargs)
+
+def cached(function, cache_dir):
+	"""
+	A function wrapper that implements an auto_cache.
+
+	Parameters
+	----------
+	function : Callable
+		A function
+	cache_dir : Path-like
+		This is either a text or byte string giving the name (and the path
+		if the file isn't in the current working directory) of the directory to
+		be used to store cache files.
+
+	Returns
+	-------
+	function : Callable
+	"""
+	return lambda *args, **kwargs: auto_cache(cache_dir, function, *args, **kwargs)
+
