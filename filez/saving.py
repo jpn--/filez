@@ -94,6 +94,8 @@ def cache(filename, function, *args, **kwargs):
 	This is not a smart cache: if the named cache file exists, it is loaded
 	and the given arguments are ignored.
 
+	For a much smarter cache system, see the `joblib` package.
+
 	Parameters
 	----------
 	filename : Path-like

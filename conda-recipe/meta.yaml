@@ -7,11 +7,11 @@ source:
 
 requirements:
   build:
-    - python>=3.6
+    - python
   host:
-    - python>=3.6
+    - python
   run:
-    - python>=3.6
+    - python
   
 test:
   # Python imports
